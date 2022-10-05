@@ -34,12 +34,12 @@ def sitemap():
 # the GET methods
 @app.route('/user', methods=['GET'])
 def get_user():
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-    return jsonify(response_body), 200
+    get_user = User.query.all()
+    user_list = list(map(lambda user: user.serialize(), get_user))
+
+    return jsonify(user_list), 200
     
-@app.route('/user/favorites', methods=['GET'])
+@app.route('/user/favorites', methods=['GET']) #query for all the Favorites instances where the user_id appears
 def get_user_favs():
     response_body = {
         "msg": "Hello, this is your GET /user response "
@@ -48,17 +48,17 @@ def get_user_favs():
 
 @app.route('/people', methods=['GET'])
 def get_people():
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-    return jsonify(response_body), 200
+    get_characters = Characters.query.all()
+    characters_list = list(map(lambda char: char.serialize(), get_characters))
+
+    return jsonify(characters_list), 200
     
 @app.route('/planets', methods=['GET'])
 def get_planets():
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-    return jsonify(response_body), 200
+    get_planets = Planets.query.all()
+    planets_list = list(map(lambda planet: planet.serialize(), get_planets))
+
+    return jsonify(planets_list), 200
 
 @app.route('/people/<int:people_id>', methods=['GET'])
 def get_person():
@@ -91,15 +91,25 @@ def post_user():
 
 @app.route('/people', methods=['POST'])
 def post_people():
+    body = request.json   
+    new_char = Characters.create(body)
+    if type(new_char) == dict:
+        return jsonify(new_char), 400
+
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "character": new_char.serialize()
     }
     return jsonify(response_body), 200
     
 @app.route('/planets', methods=['POST'])
 def post_planets():
+    body = request.json 
+    new_planet = Planets.create(body) 
+    if type(new_planet) == dict:
+        return jsonify(new_planet), 400
+
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "planet": new_planet.serialize()
     }
     return jsonify(response_body), 200
 
