@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Characters, Planets, Favorites
 #from models import Person
 
 app = Flask(__name__)
@@ -30,14 +30,109 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
 
+# the GET methods
+@app.route('/user', methods=['GET'])
+def get_user():
     response_body = {
         "msg": "Hello, this is your GET /user response "
     }
-
     return jsonify(response_body), 200
+    
+@app.route('/user/favorites', methods=['GET'])
+def get_user_favs():
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+    return jsonify(response_body), 200
+
+@app.route('/people', methods=['GET'])
+def get_people():
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+    return jsonify(response_body), 200
+    
+@app.route('/planets', methods=['GET'])
+def get_planets():
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+    return jsonify(response_body), 200
+
+@app.route('/people/<int:people_id>', methods=['GET'])
+def get_person():
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+    return jsonify(response_body), 200
+
+@app.route('/planets/<int:planet_id>', methods=['GET'])
+def get_planet():
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+    return jsonify(response_body), 200
+
+
+# the POST methods
+@app.route('/user', methods=['POST'])
+def post_user():
+    body = request.json    #sacando la info necesaria a un diccionario
+    new_user = User.create(body) #pasando la información dentro de nuestra clase y vertiendo la info contenida en body
+
+    if type(new_user) == dict:
+        return jsonify(new_user), 400
+
+    response_body = {
+        "user": new_user.serialize()
+    }
+    return jsonify(response_body), 200
+
+@app.route('/people', methods=['POST'])
+def post_people():
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+    return jsonify(response_body), 200
+    
+@app.route('/planets', methods=['POST'])
+def post_planets():
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+    return jsonify(response_body), 200
+
+@app.route('/favorite/people/<int:people_id>', methods=['POST'])
+def post_fav_person():
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+    return jsonify(response_body), 200
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
+def post_fav_planet():
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+    return jsonify(response_body), 200
+
+
+# the DELETE methods
+@app.route('/favorite/people/<int:people_id>', methods=['DELETE'])
+def delete_fav_person():
+    response_body = {
+        "msg": "Hello, this is your GET /user response"
+    }
+    return jsonify(response_body), 200
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
+def delete_fav_planet():
+    response_body = {
+        "msg": "Hello, this is your GET /user response"
+    }
+    return jsonify(response_body), 200
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
