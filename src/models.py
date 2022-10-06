@@ -91,7 +91,7 @@ class Characters(db.Model):
     birth_year = db.Column(db.String(50))
     gender = db.Column(db.String(50))
     skin_color = db.Column(db.String(50))
-    heigth = db.Column(db.String(50))
+    height = db.Column(db.String(50))
     favorites = db.relationship("Favorites", backref="favorites_char")
 
     @classmethod
@@ -111,7 +111,8 @@ class Characters(db.Model):
                     "status": 400
                 })
             
-            new_character = cls(character_name = body["character_name"], birth_year = body.get("birth_year"), gender = body.get("gender"), skin_color = body.get("skin_color"), heigth = body.get("heigth"))
+            new_character = cls(character_name = body["character_name"], birth_year = body.get("birth_year"), gender = body.get("gender"), skin_color = body.get("skin_color"), height = body.get("height"))
+        #    new_character = cls(character_name = body["character_name"], birth_year = body["birth_year"], gender = body["gender"], skin_color = body["skin_color"], height = body["height"])
 
             if not isinstance(new_character, cls):
                 raise Exception ({
@@ -276,7 +277,7 @@ class Favorites(db.Model):
                 })
 
             selected_fav = Planets.query.get_or_404(planet_id)
-            
+
             fav_exist = cls.query.filter_by(user_id = body["user_id"], planet_id = planet_id).one_or_none()
 
             if fav_exist:
