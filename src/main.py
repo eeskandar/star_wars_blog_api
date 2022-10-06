@@ -166,7 +166,7 @@ def post_fav_planet(planet_id):
 # the DELETE methods
 @app.route('/favorite/people/<int:people_id>', methods=['DELETE'])
 def delete_fav_person(people_id):
-    get_characters = Favorites.query.get_or_404(people_id) # works when deleting from id, not from character_id
+    get_characters = Favorites.query.filter_by(character_id = people_id).first() # works when deleting from id, not from character_id
     print(get_characters)
     delete_instance = Favorites.delete_and_commit(get_characters)
 
@@ -182,8 +182,16 @@ def delete_fav_person(people_id):
 
 @app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
 def delete_fav_planet(planet_id):
+    get_planets = Favorites.query.filter_by(planet_id = planet_id).first()
+    delete_instance = Favorites.delete_and_commit(get_planets)
+
+    if delete_instance is False:
+        return jsonify ({
+            "msg": "Could not delete your favs"
+        }), 400
+
     response_body = {
-        "msg": "Hello, this is your GET /user response"
+        "msg": "Favorites deleted successfully"
     }
     return jsonify(response_body), 200
 

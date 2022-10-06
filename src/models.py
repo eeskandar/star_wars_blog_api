@@ -235,6 +235,14 @@ class Favorites(db.Model):
 
             selected_fav = Characters.query.get_or_404(people_id)
 
+            fav_exist = cls.query.filter_by(user_id = body["user_id"], character_id = people_id).one_or_none()
+
+            if fav_exist:
+                raise Exception ({
+                    "msg": "This character is already a Favorite. Try another one",
+                    "status": 400
+                })
+
             new_favorite = cls(user_id= body["user_id"], character_id= people_id)
          
             if not isinstance(new_favorite, cls):
@@ -268,6 +276,15 @@ class Favorites(db.Model):
                 })
 
             selected_fav = Planets.query.get_or_404(planet_id)
+            
+            fav_exist = cls.query.filter_by(user_id = body["user_id"], planet_id = planet_id).one_or_none()
+
+            if fav_exist:
+                raise Exception ({
+                    "msg": "This planet is already a Favorite. Try another one",
+                    "status": 400
+                })
+
             new_favorite = cls(user_id= body["user_id"], planet_id= planet_id)
          
             if not isinstance(new_favorite, cls):
