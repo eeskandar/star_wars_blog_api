@@ -112,7 +112,6 @@ class Characters(db.Model):
                 })
             
             new_character = cls(character_name = body["character_name"], birth_year = body.get("birth_year"), gender = body.get("gender"), skin_color = body.get("skin_color"), height = body.get("height"))
-        #    new_character = cls(character_name = body["character_name"], birth_year = body["birth_year"], gender = body["gender"], skin_color = body["skin_color"], height = body["height"])
 
             if not isinstance(new_character, cls):
                 raise Exception ({

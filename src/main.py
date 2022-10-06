@@ -30,8 +30,6 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-
-# the GET methods
 @app.route('/user', methods=['GET', 'POST'])
 def handle_user():
     if request.method == 'GET':
@@ -52,7 +50,6 @@ def handle_user():
         "user": new_user.serialize()
     }
     return jsonify(response_body), 200
-    
     
 @app.route('/user/favorites', methods=['GET']) #da para solo un user al no ser dinámico
 def get_user_favs():
@@ -83,10 +80,22 @@ def handle_people():
     
 @app.route('/planets', methods=['GET', 'POST'])
 def handle_planets():
-    get_planets = Planets.query.all()
-    planets_list = list(map(lambda planet: planet.serialize(), get_planets))
+    if request.method == 'GET':
+        get_planets = Planets.query.all()
+        planets_list = list(map(lambda planet: planet.serialize(), get_planets))
 
-    return jsonify(planets_list), 200
+        return jsonify(planets_list), 200
+    body = request.json 
+    new_planet = Planets.create(body) 
+    if type(new_planet) == dict:
+        return jsonify({
+            "msg": new_planet["msg"]
+        }), new_planet["status"]
+
+    response_body = {
+        "planet": new_planet.serialize()
+    }
+    return jsonify(response_body), 200
 
 @app.route('/people/<int:people_id>', methods=['GET'])
 def get_person(people_id):
@@ -110,37 +119,6 @@ def get_planet(planet_id):
         "climate": get_planet.climate,
         "terrain": get_planet.terrain,
         "population": get_planet.population
-    }
-    return jsonify(response_body), 200
-
-
-# the POST methods
-
-"""@app.route('/people', methods=['POST'])
-def post_people():
-    body = request.json   
-    new_char = Characters.create(body)
-    if type(new_char) == dict:
-        return jsonify({
-            "msg": new_char["msg"]
-        }), new_char["status"]
-
-    response_body = {
-        "character": new_char.serialize()
-    }
-    return jsonify(response_body), 200"""
-    
-@app.route('/planets', methods=['POST'])
-def post_planets():
-    body = request.json 
-    new_planet = Planets.create(body) 
-    if type(new_planet) == dict:
-        return jsonify({
-            "msg": new_planet["msg"]
-        }), new_planet["status"]
-
-    response_body = {
-        "planet": new_planet.serialize()
     }
     return jsonify(response_body), 200
 
