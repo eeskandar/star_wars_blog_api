@@ -16,43 +16,47 @@ class User(db.Model):
             if body.get("first_name") is None:
                 raise Exception ({
                     "msg": "Your first name can't be empty"
-                })
+                }, 400)
             if body.get("last_name") is None:
                 raise Exception ({
                     "msg": "Your last name can't be empty"
-                })
+                }, 400)
             if body.get("password") is None:
                 raise Exception ({
                     "msg": "Your password can't be empty"
-                })
+                }, 400)
             if body.get("email") is None:
                 raise Exception ({
                     "msg": "Your email can't be empty"
-                })
+                }, 400)
 
             user_exist = cls.query.filter_by(email = body["email"]).one_or_none()
 
             if user_exist:
                 raise Exception ({
                     "msg": "This email is already registered. Try another one"
-                })
+                }, 400)
             
             new_user = cls(first_name = body["first_name"], last_name = body["last_name"], email = body["email"], password = body["password"])
 
             if not isinstance(new_user, cls):
                 raise Exception ({
-                    "msg": "There's no response from the server"
-                })
+                    "msg": "Server Error"
+                }, 500)
             
             save_instance = new_user.save_and_commit()
+
+            if save_instance is False:
+                raise Exception ({
+                    "msg": "Server Error"
+                }, 500)
 
             return new_user
             
         except Exception as error:
-            print(error.args)
             return ({
                 "msg": "Something went wrong (" + error.args[0]["msg"] + ")"
-            })
+            }, error.args[1])
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -66,6 +70,15 @@ class User(db.Model):
     def save_and_commit(self):
         try:
             db.session.add(self) 
+            db.session.commit()
+            return True
+        except Exception as error:
+            db.session.rollback()
+            return False
+
+    def delete_and_commit(self):
+        try:
+            db.session.delete(self) 
             db.session.commit()
             return True
         except Exception as error:
@@ -88,23 +101,28 @@ class Characters(db.Model):
             if body.get("character_name") is None:
                 raise Exception ({
                     "msg": "Your must write the character's name"
-                })
+                }, 400)
 
             character_exist = cls.query.filter_by(character_name = body["character_name"]).one_or_none()
 
             if character_exist:
                 raise Exception ({
                     "msg": "This character is already registered. Try another one or adding more info to the name"
-                })
+                }, 400)
             
-            new_character = cls(character_name = body["character_name"], birth_year = body["birth_year"], gender = body["gender"], skin_color = body["skin_color"], heigth = body["heigth"])
+            new_character = cls(character_name = body["character_name"], birth_year = body.get("birth_year"), gender = body.get("gender"), skin_color = body.get("skin_color"), heigth = body.get("heigth"))
 
             if not isinstance(new_character, cls):
                 raise Exception ({
-                    "msg": "There's no response from the server"
-                })
+                    "msg": "Server Error"
+                }, 500)
             
             save_instance = new_character.save_and_commit()
+
+            if save_instance is False:
+                raise Exception ({
+                    "msg": "Server Error"
+                }, 500)
 
             return new_character
             
@@ -112,7 +130,7 @@ class Characters(db.Model):
             print(error.args)
             return ({
                 "msg": "Something went wrong (" + error.args[0]["msg"] + ")"
-            })
+            }, error.args[1])
 
     def __repr__(self):
         return f'<Character {self.character_name}>'
@@ -146,23 +164,28 @@ class Planets(db.Model):
             if body.get("planet_name") is None:
                 raise Exception ({
                     "msg": "Your must write the planet's name"
-                })
+                }, 400)
 
             planet_exist = cls.query.filter_by(planet_name = body["planet_name"]).one_or_none()
 
             if planet_exist:
                 raise Exception ({
                     "msg": "This planet is already registered. Try another one or adding more info to the name"
-                })
+                }, 400)
             
-            new_planet = cls(planet_name = body["planet_name"], climate = body["climate"], terrain = body["terrain"], population = body["population"])
+            new_planet = cls(planet_name = body["planet_name"], climate = body.get("climate"), terrain = body.get("terrain"), population = body.get("population"))
 
             if not isinstance(new_planet, cls):
                 raise Exception ({
-                    "msg": "There's no response from the server"
-                })
+                    "msg": "Server Error"
+                }, 500)
             
             save_instance = new_planet.save_and_commit()
+
+            if save_instance is False:
+                raise Exception ({
+                    "msg": "Server Error"
+                }, 500)
 
             return new_planet
             
@@ -170,7 +193,7 @@ class Planets(db.Model):
             print(error.args)
             return ({
                 "msg": "Something went wrong (" + error.args[0]["msg"] + ")"
-            })
+            }, error.args[1])
 
     def __repr__(self):
         return f'<Planet {self.planet_name}>'

@@ -79,12 +79,12 @@ def get_planet():
 @app.route('/user', methods=['POST'])
 def post_user():
     body = request.json    #sacando la info necesaria a un diccionario
-    new_user = User.create(body) #pasando la información dentro de nuestra clase y vertiendo la info contenida en body
+    new_user = User.create(body)    #pasando la información dentro de nuestra clase y vertiendo la info contenida en body
 
-    if type(new_user) == dict:
+    if type(new_user) == dict:    #en caso de haber un error se devuelve esto
         return jsonify(new_user), 400
 
-    response_body = {
+    response_body = {      #en caso de salir todo bien se devuelve esto
         "user": new_user.serialize()
     }
     return jsonify(response_body), 200
