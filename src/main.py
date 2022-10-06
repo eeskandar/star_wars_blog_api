@@ -39,12 +39,12 @@ def get_user():
 
     return jsonify(user_list), 200
     
-@app.route('/user/favorites', methods=['GET']) #query for all the Favorites instances where the user_id appears
+@app.route('/user/favorites', methods=['GET']) #da para solo un user al no ser dinámico
 def get_user_favs():
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-    return jsonify(response_body), 200
+    get_favs = Favorites.query.filter_by(user_id = "1")
+    favs_list = list(map(lambda fav: fav.serialize(), get_favs))
+  
+    return jsonify(favs_list), 200
 
 @app.route('/people', methods=['GET'])
 def get_people():
@@ -61,16 +61,27 @@ def get_planets():
     return jsonify(planets_list), 200
 
 @app.route('/people/<int:people_id>', methods=['GET'])
-def get_person():
+def get_person(people_id):
+    get_person = Characters.query.get_or_404(people_id)
+
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "character": get_person.character_name,
+        "birth_year": get_person.birth_year,
+        "gender": get_person.gender,
+        "skin_color": get_person.skin_color,
+        "heigth": get_person.heigth
     }
     return jsonify(response_body), 200
 
 @app.route('/planets/<int:planet_id>', methods=['GET'])
-def get_planet():
+def get_planet(planet_id):
+    get_planet = Planets.query.get_or_404(planet_id)
+
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "planet_name": get_planet.planet_name,
+        "climate": get_planet.climate,
+        "terrain": get_planet.terrain,
+        "population": get_planet.population
     }
     return jsonify(response_body), 200
 
@@ -82,7 +93,9 @@ def post_user():
     new_user = User.create(body)    #pasando la información dentro de nuestra clase y vertiendo la info contenida en body
 
     if type(new_user) == dict:    #en caso de haber un error se devuelve esto
-        return jsonify(new_user), 400
+        return jsonify({
+            "msg": new_user["msg"]
+        }), new_user["status"]
 
     response_body = {      #en caso de salir todo bien se devuelve esto
         "user": new_user.serialize()
@@ -94,7 +107,9 @@ def post_people():
     body = request.json   
     new_char = Characters.create(body)
     if type(new_char) == dict:
-        return jsonify(new_char), 400
+        return jsonify({
+            "msg": new_char["msg"]
+        }), new_char["status"]
 
     response_body = {
         "character": new_char.serialize()
@@ -106,7 +121,9 @@ def post_planets():
     body = request.json 
     new_planet = Planets.create(body) 
     if type(new_planet) == dict:
-        return jsonify(new_planet), 400
+        return jsonify({
+            "msg": new_planet["msg"]
+        }), new_planet["status"]
 
     response_body = {
         "planet": new_planet.serialize()
@@ -114,30 +131,57 @@ def post_planets():
     return jsonify(response_body), 200
 
 @app.route('/favorite/people/<int:people_id>', methods=['POST'])
-def post_fav_person():
+def post_fav_person(people_id):
+    body = request.json
+    new_fav_char = Favorites.fav_char(Favorites, body, people_id)
+
+    if type(new_fav_char) == dict:
+        return jsonify({
+            "msg": new_fav_char["msg"]
+        }), new_fav_char["status"]
+
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "favorite": new_fav_char.serialize_char()
     }
+
     return jsonify(response_body), 200
 
 @app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
-def post_fav_planet():
+def post_fav_planet(planet_id):
+    body = request.json
+    new_fav_planet = Favorites.fav_planet(Favorites, body, planet_id)
+
+    if type(new_fav_planet) == dict:
+        return jsonify({
+            "msg": new_fav_planet["msg"]
+        }), new_fav_planet["status"]
+
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "favorite": new_fav_planet.serialize_planet()
     }
+
     return jsonify(response_body), 200
 
 
 # the DELETE methods
 @app.route('/favorite/people/<int:people_id>', methods=['DELETE'])
-def delete_fav_person():
+def delete_fav_person(people_id):
+    get_characters = Favorites.query.get_or_404(people_id) # works when deleting from id, not from character_id
+    print(get_characters)
+    delete_instance = Favorites.delete_and_commit(get_characters)
+
+    if delete_instance is False:
+        return jsonify ({
+            "msg": "Could not delete your favs"
+        }), 400
+
     response_body = {
-        "msg": "Hello, this is your GET /user response"
+        "msg": "Favorites deleted successfully"
     }
     return jsonify(response_body), 200
 
 @app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
-def delete_fav_planet():
+def delete_fav_planet(planet_id):
     response_body = {
         "msg": "Hello, this is your GET /user response"
     }
