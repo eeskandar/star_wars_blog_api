@@ -97,7 +97,7 @@ def get_person(people_id):
         "birth_year": get_person.birth_year,
         "gender": get_person.gender,
         "skin_color": get_person.skin_color,
-        "heigth": get_person.heigth
+        "height": get_person.height
     }
     return jsonify(response_body), 200
 
