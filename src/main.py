@@ -34,6 +34,12 @@ def sitemap():
 def handle_user():
     if request.method == 'GET':
         get_user = User.query.all()
+
+        if get_user is None:
+        return jsonify({
+            "msg": "There are no users yet!"
+        }), 400
+
         user_list = list(map(lambda user: user.serialize(), get_user))
 
         return jsonify(user_list), 200
@@ -54,6 +60,12 @@ def handle_user():
 @app.route('/user/favorites', methods=['GET']) #da para solo un user al no ser dinámico
 def get_user_favs():
     get_favs = Favorites.query.filter_by(user_id = "1")
+
+    if get_favs is None:
+        return jsonify({
+            "msg": "There are no favorites yet!"
+        }), 400
+
     favs_list = list(map(lambda fav: fav.serialize(), get_favs))
   
     return jsonify(favs_list), 200
@@ -62,6 +74,12 @@ def get_user_favs():
 def handle_people():
     if request.method == 'GET':
         get_characters = Characters.query.all()
+
+        if get_characters is None:
+        return jsonify({
+            "msg": "There are no characters yet!"
+        }), 400
+
         characters_list = list(map(lambda char: char.serialize(), get_characters))
 
         return jsonify(characters_list), 200
@@ -82,6 +100,12 @@ def handle_people():
 def handle_planets():
     if request.method == 'GET':
         get_planets = Planets.query.all()
+
+        if get_planets is None:
+        return jsonify({
+            "msg": "There are no planets yet!"
+        }), 400
+
         planets_list = list(map(lambda planet: planet.serialize(), get_planets))
 
         return jsonify(planets_list), 200
