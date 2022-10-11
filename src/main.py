@@ -36,9 +36,9 @@ def handle_user():
         get_user = User.query.all()
 
         if get_user is None:
-        return jsonify({
-            "msg": "There are no users yet!"
-        }), 400
+            return jsonify({
+                "msg": "There are no users yet!"
+            }), 400
 
         user_list = list(map(lambda user: user.serialize(), get_user))
 
@@ -67,7 +67,7 @@ def get_user_favs():
         }), 400
 
     favs_list = list(map(lambda fav: fav.serialize(), get_favs))
-  
+
     return jsonify(favs_list), 200
 
 @app.route('/people', methods=['GET', 'POST'])
@@ -76,9 +76,9 @@ def handle_people():
         get_characters = Characters.query.all()
 
         if get_characters is None:
-        return jsonify({
-            "msg": "There are no characters yet!"
-        }), 400
+            return jsonify({
+                "msg": "There are no characters yet!"
+            }), 400
 
         characters_list = list(map(lambda char: char.serialize(), get_characters))
 
@@ -102,9 +102,9 @@ def handle_planets():
         get_planets = Planets.query.all()
 
         if get_planets is None:
-        return jsonify({
-            "msg": "There are no planets yet!"
-        }), 400
+            return jsonify({
+                "msg": "There are no planets yet!"
+            }), 400
 
         planets_list = list(map(lambda planet: planet.serialize(), get_planets))
 
@@ -200,7 +200,7 @@ def handle_fav_planet(planet_id):
         return jsonify(response_body), 200
 
     get_planets = Favorites.query.filter_by(user_id = body["user_id"], planet_id = planet_id).first()
-   
+
     if get_planets is None:
         return jsonify({
             "msg": "This planet is not a favorite"
